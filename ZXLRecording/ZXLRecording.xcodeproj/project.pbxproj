@@ -12,6 +12,8 @@
 		92A13D961E07CC48008E0648 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92A13D941E07CC48008E0648 /* Main.storyboard */; };
 		92A13D981E07CC48008E0648 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 92A13D971E07CC48008E0648 /* Assets.xcassets */; };
 		92A13D9B1E07CC48008E0648 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92A13D991E07CC48008E0648 /* LaunchScreen.storyboard */; };
+		92A13DA31E07CD29008E0648 /* SoundRecording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A13DA21E07CD29008E0648 /* SoundRecording.swift */; };
+		92A13DA51E07CD45008E0648 /* VideoRecording.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A13DA41E07CD45008E0648 /* VideoRecording.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,8 @@
 		92A13D971E07CC48008E0648 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		92A13D9A1E07CC48008E0648 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		92A13D9C1E07CC48008E0648 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		92A13DA21E07CD29008E0648 /* SoundRecording.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundRecording.swift; sourceTree = "<group>"; };
+		92A13DA41E07CD45008E0648 /* VideoRecording.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoRecording.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +60,8 @@
 			children = (
 				92A13D901E07CC48008E0648 /* AppDelegate.swift */,
 				92A13D921E07CC48008E0648 /* ViewController.swift */,
+				92A13DA21E07CD29008E0648 /* SoundRecording.swift */,
+				92A13DA41E07CD45008E0648 /* VideoRecording.swift */,
 				92A13D941E07CC48008E0648 /* Main.storyboard */,
 				92A13D971E07CC48008E0648 /* Assets.xcassets */,
 				92A13D991E07CC48008E0648 /* LaunchScreen.storyboard */,
@@ -137,8 +143,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92A13DA31E07CD29008E0648 /* SoundRecording.swift in Sources */,
 				92A13D931E07CC48008E0648 /* ViewController.swift in Sources */,
 				92A13D911E07CC48008E0648 /* AppDelegate.swift in Sources */,
+				92A13DA51E07CD45008E0648 /* VideoRecording.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
