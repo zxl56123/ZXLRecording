@@ -22,19 +22,23 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     
     var recordBtn : UIButton!
     var finishBtn : UIButton!
+    var switchBtn : UIButton!
     var playBtn : UIButton!
+    var statueLab : UILabel!
     
     //获取音频会话单例
     let audioSession = AVAudioSession.sharedInstance()
     var isAllowed:Bool = false
     
+    let btnWith = CGFloat(60)
+    let btnSpace = CGFloat(40)
     
     //定义音频的编码参数
     let recordSettings = [
         AVSampleRateKey : NSNumber(value: Float(44100.0)),//声音采样率
         AVFormatIDKey   : NSNumber(value: Int32(kAudioFormatMPEG4AAC)),//编码格式
         AVNumberOfChannelsKey : NSNumber(value: 1),//采集音轨
-        AVEncoderAudioQualityKey : NSNumber(value: Int32(AVAudioQuality.medium.rawValue))]//音频质量
+        AVEncoderAudioQualityKey : NSNumber(value: Int32(AVAudioQuality.max.rawValue))]//音频质量
     
     //MARK:- viewDidLoad
     override func viewDidLoad() {
@@ -42,6 +46,21 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
         self.title = "录制音频"
         self.view.backgroundColor = UIColor.white
         
+        //首先要判断是否允许访问麦克风&初始化
+        self.recordPermissionAndInit()
+        
+        //初始化显示状态lab
+        self.initStatueLab()
+ 
+        //初始化录音按钮、暂停按钮、播放按钮
+        self.initRecordBtn()
+
+        //初始化切换按钮 麦克风/扬声器
+        self.initSwitchBtn()
+    }
+    
+    //MARK:-判断是否允许访问麦克风
+    func recordPermissionAndInit() -> Void {
         //首先要判断是否允许访问麦克风
         audioSession.requestRecordPermission { (allowed) in
             if !allowed{
@@ -55,7 +74,8 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
         
         if self.isAllowed{
             do {
-                try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+                //AVAudioSessionCategoryPlayback 、AVAudioSessionCategoryPlayAndRecord
+                try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord) //默认使用扬声器
                 //初始化实例
                 try audioRecorder = AVAudioRecorder(url: self.directoryURL()! as URL,
                                                     settings: recordSettings)
@@ -67,34 +87,75 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
                 print(error)
             }
         }
-        
-        //录音按钮
-        recordBtn = UIButton(frame: CGRect(x: 0,y: SCREENHEIGHT - 64 - 100,width: SCREENWITH,height: 40))
-        recordBtn.setTitle("开始录音", for:.normal)
-        recordBtn.setTitle("暂停录音", for: .selected)
-        recordBtn.titleLabel?.textAlignment = .center
-        recordBtn.setTitleColor(UIColor.black, for: .normal)
-        recordBtn.setTitleColor(UIColor.red, for: .selected)
-        recordBtn.addTarget(self, action:#selector(startRecord(sender:)), for:.touchUpInside)
-        self.view.addSubview(recordBtn)
-        
-        finishBtn = UIButton(frame: CGRect(x: 0,y:recordBtn.frame.maxY + 10,width: SCREENWITH,height: 40))
-        finishBtn.setTitle("完成", for:.normal)
-        finishBtn.titleLabel?.textAlignment = .center
-        finishBtn.setTitleColor(UIColor.black, for: .normal)
-        finishBtn.setTitleColor(UIColor.red, for: .selected)
-        finishBtn.addTarget(self, action:#selector(stopRecord(sender:)), for:.touchUpInside)
-        self.view.addSubview(finishBtn)
-        
-        
-        playBtn = UIButton(frame: CGRect(x: 0,y:finishBtn.frame.maxY + 10,width: SCREENWITH,height: 40))
+    }
+    
+    //MARK:-初始化状态栏lab
+    func initStatueLab() -> Void {
+        statueLab = UILabel(frame: CGRect(x: 20, y: 64 + 20, width: SCREENWITH, height: 40))
+        statueLab.text = "等待中..."
+        statueLab.font = UIFont.systemFont(ofSize: 15)
+        self.view.addSubview(statueLab)
+    }
+    
+    //MARK:-初始化暂停按钮、播放按钮
+    func initRecordBtn() -> Void {
+        playBtn = UIButton(frame: CGRect(x: (SCREENWITH-40)/2,y:SCREENHEIGHT - 64 - 100,width: btnWith,height: 40))
         playBtn.setTitle("播放", for:.normal)
         playBtn.titleLabel?.textAlignment = .center
         playBtn.setTitleColor(UIColor.black, for: .normal)
         playBtn.setTitleColor(UIColor.red, for: .selected)
+        playBtn.layer.borderWidth = 0.5
+        playBtn.layer.cornerRadius = 4.0
         playBtn.addTarget(self, action:#selector(startPlaying(sender:)), for:.touchUpInside)
         self.view.addSubview(playBtn)
-
+        
+        //录音按钮
+        recordBtn = UIButton(frame: CGRect(x: playBtn.frame.minX - btnSpace - btnWith,y: playBtn.frame.minY,width: btnWith,height: 40))
+        recordBtn.setTitle("开始", for:.normal)
+        recordBtn.setTitle("暂停", for: .selected)
+        recordBtn.titleLabel?.textAlignment = .center
+        recordBtn.setTitleColor(UIColor.black, for: .normal)
+        recordBtn.setTitleColor(UIColor.red, for: .selected)
+        recordBtn.layer.borderWidth = 0.5
+        recordBtn.layer.cornerRadius = 4.0
+        recordBtn.addTarget(self, action:#selector(startRecord(sender:)), for:.touchUpInside)
+        self.view.addSubview(recordBtn)
+        
+        finishBtn = UIButton(frame: CGRect(x: playBtn.frame.maxX + btnSpace,y:playBtn.frame.minY,width: btnWith,height: 40))
+        finishBtn.setTitle("完成", for:.normal)
+        finishBtn.titleLabel?.textAlignment = .center
+        finishBtn.setTitleColor(UIColor.black, for: .normal)
+        finishBtn.setTitleColor(UIColor.red, for: .selected)
+        finishBtn.layer.borderWidth = 0.5
+        finishBtn.layer.cornerRadius = 4.0
+        finishBtn.addTarget(self, action:#selector(stopRecord(sender:)), for:.touchUpInside)
+        self.view.addSubview(finishBtn)
+    }
+    
+    //MARK:-初始化切换按钮 麦克风/扬声器
+    func initSwitchBtn() ->  Void{
+        switchBtn = UIButton(frame: CGRect(x: SCREENWITH - 40, y: 64 + 20, width: 40, height: 40))
+        switchBtn.setImage(UIImage(named:"speaker"), for: .normal)
+        switchBtn.setImage(UIImage(named:"mic"), for: .selected)
+        
+        switchBtn.addTarget(self, action: #selector(tapSwitchBtn(sender:)), for: .touchUpInside)
+        self.view.addSubview(switchBtn)
+    }
+    
+    func tapSwitchBtn(sender:UIButton) -> Void {
+        sender.isSelected = !sender.isSelected
+        
+        do {
+            if sender.isSelected { //选中
+                //切换为扬声器
+                try audioSession.setCategory(AVAudioSessionCategoryPlayback)
+            }else{ //未选中
+                //切换为听筒📞
+                try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+            }
+        } catch let error as NSError {
+            print(error)
+        }
     }
     
     func tapbtn() -> Void {
@@ -124,7 +185,7 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     
     //开始录音
     func startRecord(sender: AnyObject) {
-        
+        statueLab.text = "录音中..."
         //如果正在播放，先停止播放
         if let audioPlayer = audioPlayer, audioPlayer.isPlaying {
             audioPlayer.stop()
@@ -142,6 +203,7 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     
     //停止录音
     func stopRecord(sender: AnyObject) {
+        statueLab.text = "录音完成"
         if audioRecorder.isRecording{
             audioRecorder.stop()
             do {
@@ -154,6 +216,7 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     
     //开始播放
     func startPlaying(sender: AnyObject) {
+        statueLab.text = "播放中..."
         if (!audioRecorder.isRecording){
             do {
                 //创建音频播放器AVAudioPlayer，用于在录音完成之后播放录音
@@ -171,6 +234,7 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     
     //暂停播放
     func pausePlaying(sender: AnyObject) {
+        statueLab.text = "暂停播放"
         if let audioPlayer = audioPlayer, audioPlayer.isPlaying{
             if (!audioRecorder.isRecording){
                 audioPlayer.pause()
@@ -180,6 +244,7 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     
     //暂停录制
     func pauseRecoder(sender: AnyObject) {
+        statueLab.text = "暂停录音"
         if audioRecorder.isRecording{
             audioRecorder.pause()
         }
@@ -187,13 +252,40 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     
     //恢复录制，恢复录音只需要再次调用record，AVAudioSession会帮助你记录上次录音位置并追加录音
     func resumeRecoder(sender: AnyObject) {
+        statueLab.text = "开始录音..."
         if (!audioRecorder.isRecording){
             self.startRecord(sender: sender)
         }
     }
     
+    
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+        if flag{
+            if #available(iOS 8.0, *) {
+                let alert = UIAlertController(title: "录音",
+                                              message: "录音完成",
+                                              preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK!", style: .default, handler: {action in
+                    print("OK was tapped")
+                    self.statueLab.text = "录音完成"
+                }))
+                self.present(alert, animated:true, completion:nil)
+            } else {
+                // Fallback on earlier versions
+            }
+        }
+    }
+    
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        if flag{
+            print("播放完成!")
+            statueLab.text = "播放完成"
+        }
+    }
 }
 
+
+//FIXME:暂时用不到
 extension ViewController:AVAudioRecorderDelegate{
     
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
