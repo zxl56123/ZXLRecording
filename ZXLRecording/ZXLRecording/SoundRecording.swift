@@ -11,7 +11,7 @@ import UIKit
 import AVFoundation
 
 /// 音频录制
-class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDelegate{
+class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDelegate,UITableViewDelegate,UITableViewDataSource{
     
     let SCREENWITH = UIScreen.main.bounds.size.width
     let SCREENHEIGHT = UIScreen.main.bounds.size.height
@@ -25,15 +25,17 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     var switchBtn : UIButton!
     var playBtn : UIButton!
     var statueLab : UILabel!
+    var tableview : UITableView!
     
     //获取音频会话单例
     let audioSession = AVAudioSession.sharedInstance()
     var isAllowed:Bool = false
+    var isFinishRecord:Bool = false
     
     let btnWith = CGFloat(60)
     let btnSpace = CGFloat(40)
     
-    //定义音频的编码参数
+    //定义音频的编码参数 - 实例化一个音频录制者AVAudioRecorder，指定录音保存的路径并且设置录音相关属性，注意因为录音机必须知道录音文件的格式、采样率、通道数、每个采样点的位数等信息，但是也并不是所有的信息都必须设置，通常只需要几个常用设置。AVAudioRecorder为我们提供了settings属性字典用于设置相关信息。关于录音设置详见帮助文档中的 AV Foundation Audio Settings Constants。
     let recordSettings = [
         AVSampleRateKey : NSNumber(value: Float(44100.0)),//声音采样率
         AVFormatIDKey   : NSNumber(value: Int32(kAudioFormatMPEG4AAC)),//编码格式
@@ -57,6 +59,9 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
 
         //初始化切换按钮 麦克风/扬声器
         self.initSwitchBtn()
+        
+        //初始化tableview
+        self.initTableView()
     }
     
     //MARK:-判断是否允许访问麦克风
@@ -99,7 +104,12 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     
     //MARK:-初始化暂停按钮、播放按钮
     func initRecordBtn() -> Void {
-        playBtn = UIButton(frame: CGRect(x: (SCREENWITH-40)/2,y:SCREENHEIGHT - 64 - 100,width: btnWith,height: 40))
+        
+        let imageV = UIImageView(frame: CGRect(x: (SCREENWITH-64)/2, y: statueLab.frame.maxY + 8, width: 64, height: 64))
+        imageV.image = UIImage(named: "micImage")
+        self.view.addSubview(imageV)
+        
+        playBtn = UIButton(frame: CGRect(x: (SCREENWITH-40)/2,y:imageV.frame.maxY + 8,width: btnWith,height: 40))
         playBtn.setTitle("播放", for:.normal)
         playBtn.titleLabel?.textAlignment = .center
         playBtn.setTitleColor(UIColor.black, for: .normal)
@@ -142,6 +152,14 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
         self.view.addSubview(switchBtn)
     }
     
+    func initTableView() -> Void {
+        tableview = UITableView(frame: CGRect(x: 0, y: playBtn.frame.maxY + 8, width: SCREENWITH, height: SCREENHEIGHT - playBtn.frame.maxY - 8))
+        tableview.delegate = self
+        tableview.dataSource = self
+        self.view.addSubview(tableview)
+        
+    }
+    
     func tapSwitchBtn(sender:UIButton) -> Void {
         sender.isSelected = !sender.isSelected
         
@@ -177,22 +195,60 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
         let documentDirectory = urls[0] as NSURL
         let soundURL = documentDirectory.appendingPathComponent(recordingName)
         
-        print(soundURL)
-        
+        print(soundURL?.absoluteString)
         return soundURL as NSURL?
+    }
+    
+    func getFilelist(type:String, path:String) -> Void {
+        let fileManager = FileManager()
+        var tmpList:[String]?
+        do {
+            try tmpList = fileManager.contentsOfDirectory(atPath: path)
+            var filename:String!
+            for  filename in tmpList! {
+    
+                print(filename)
+                
+            }
+        } catch let error as NSError {
+            print(error)
+        }
+        
+
     }
     
     
     //开始录音
     func startRecord(sender: AnyObject) {
+
         statueLab.text = "录音中..."
         //如果正在播放，先停止播放
         if let audioPlayer = audioPlayer, audioPlayer.isPlaying {
             audioPlayer.stop()
         }
+        
+        if isFinishRecord {
+            if self.isAllowed{
+                do {
+                    //AVAudioSessionCategoryPlayback 、AVAudioSessionCategoryPlayAndRecord
+                    try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord) //默认使用扬声器
+                    //初始化实例
+                    try audioRecorder = AVAudioRecorder(url: self.directoryURL()! as URL,
+                                                        settings: recordSettings)
+                    //try audioRecorder = AVAudioRecorder(URL: self.directoryURL()! as URL,settings: "SoundRecording")
+                    audioRecorder.delegate = self
+                    //准备录音
+                    audioRecorder.prepareToRecord()
+                } catch let error as NSError{
+                    print(error)
+                }
+            }
+        }
+        
         //是否正在录音，如果没有，开始录音
         if !audioRecorder.isRecording {
             do {
+                
                 try audioSession.setActive(true)
                 audioRecorder.record()
             }catch let error as NSError{
@@ -204,6 +260,8 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     //停止录音
     func stopRecord(sender: AnyObject) {
         statueLab.text = "录音完成"
+        isFinishRecord = true
+        
         if audioRecorder.isRecording{
             audioRecorder.stop()
             do {
@@ -230,6 +288,14 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
                 print(error)
             }
         }
+        
+        //获取录音文件列表
+        let fileManager = FileManager()
+        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentDirectory = urls[0] as NSURL
+        let urlStr : String = documentDirectory.absoluteString!
+        self.getFilelist(type: ".m4a", path: urlStr)
+
     }
     
     //暂停播放
@@ -281,6 +347,23 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
             print("播放完成!")
             statueLab.text = "播放完成"
         }
+    }
+    
+    //MARK:-uitableview
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell()
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableview.deselectRow(at: indexPath, animated: true)
+    
+        NSLog("%ld", indexPath.row)
+    
     }
 }
 
