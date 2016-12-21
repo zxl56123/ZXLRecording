@@ -26,12 +26,12 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     var playBtn : UIButton!
     var statueLab : UILabel!
     var tableview : UITableView!
-    
+    var dataAr : [Any]!
     //获取音频会话单例
     let audioSession = AVAudioSession.sharedInstance()
     var isAllowed:Bool = false
     var isFinishRecord:Bool = false
-    
+    var savePathStr : String!
     let btnWith = CGFloat(60)
     let btnSpace = CGFloat(40)
     
@@ -48,6 +48,8 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
         self.title = "录制音频"
         self.view.backgroundColor = UIColor.white
         
+         dataAr = Array<Any>()
+        
         //首先要判断是否允许访问麦克风&初始化
         self.recordPermissionAndInit()
         
@@ -62,6 +64,15 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
         
         //初始化tableview
         self.initTableView()
+        
+        //遍历目录，获取录音文件
+        let fileManager = FileManager()
+        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentDirectory = urls[0] as NSURL
+        let docStr : String = documentDirectory.path!
+        savePathStr = docStr
+        
+        self.getFilelist(type: "m4a", path: self.savePathStr)
     }
     
     //MARK:-判断是否允许访问麦克风
@@ -76,22 +87,7 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
                 self.isAllowed = true
             }
         }
-        
-        if self.isAllowed{
-            do {
-                //AVAudioSessionCategoryPlayback 、AVAudioSessionCategoryPlayAndRecord
-                try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord) //默认使用扬声器
-                //初始化实例
-                try audioRecorder = AVAudioRecorder(url: self.directoryURL()! as URL,
-                                                    settings: recordSettings)
-                //try audioRecorder = AVAudioRecorder(URL: self.directoryURL()! as URL,settings: "SoundRecording")
-                audioRecorder.delegate = self
-                //准备录音
-                audioRecorder.prepareToRecord()
-            } catch let error as NSError{
-                print(error)
-            }
-        }
+
     }
     
     //MARK:-初始化状态栏lab
@@ -168,7 +164,7 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
                 //切换为扬声器
                 try audioSession.setCategory(AVAudioSessionCategoryPlayback)
             }else{ //未选中
-                //切换为听筒📞
+                //切换为听筒
                 try audioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
             }
         } catch let error as NSError {
@@ -181,21 +177,38 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     }
     
     func directoryURL() -> NSURL? {
+        
+        //1、文件目录是否存，不存在就创建目录
+        let fileManager = FileManager()
+        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentDirectory = urls[0] as NSURL
+        //I figured this one out. createDirectoryAtPath() is unable to process a path with the "file://" prefix. To get a path without the prefix you must use path() or relativePath().
+        //使用path获取路径
+        //如果使用absoluteString 获取路径会包含"file://"前缀,如果用这个带file://前缀目录就会是错的！！不能获取目录中的内容
+        //let docStr : String = documentDirectory.absoluteString! //不用用于获取路径
+        let docStr : String = documentDirectory.path!
+        
+        savePathStr = docStr
+       
+//        if !fileManager.fileExists(atPath: savePathStr) {
+//            do {
+//                try fileManager.createDirectory(at: NSURL.fileURL(withPath: savePathStr), withIntermediateDirectories: true, attributes: nil)
+//            } catch let error as NSError {
+//                print(error)
+//            }
+//        }
+        
+        //2、用时间目录命名录音文件
         //定义并构建一个url来保存音频，音频文件名为ddMMyyyyHHmmss.caf，根据时间来设置存储文件名
         let currentDateTime = NSDate()
         let formatter = DateFormatter()
-        formatter.dateFormat = "ddMMyyyyHHmmss"
+        formatter.dateFormat = "YYYY-MM-dd HH:YY:SS"
         //以下2种格式都可以
         //let recordingName = formatter.stringFromDate(currentDateTime)+".caf"
         let recordingName = formatter.string(from: currentDateTime as Date)+".m4a"
-        
-        let fileManager = FileManager()
-        
-        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentDirectory = urls[0] as NSURL
         let soundURL = documentDirectory.appendingPathComponent(recordingName)
         
-        print(soundURL?.absoluteString)
+        
         return soundURL as NSURL?
     }
     
@@ -203,13 +216,21 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
         let fileManager = FileManager()
         var tmpList:[String]?
         do {
+            //1.先删除
+            dataAr.removeAll()
+            
             try tmpList = fileManager.contentsOfDirectory(atPath: path)
-            var filename:String!
-            for  filename in tmpList! {
-    
-                print(filename)
+            //var filename:String?
+            for filename in tmpList! {
                 
+                print(filename)
+                //2.重新赋值 insert到第一个，append追加
+                dataAr?.insert(filename, at: 0)
             }
+            
+            //刷新tableview
+            tableview.reloadData()
+            
         } catch let error as NSError {
             print(error)
         }
@@ -227,7 +248,7 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
             audioPlayer.stop()
         }
         
-        if isFinishRecord {
+        if !isFinishRecord {
             if self.isAllowed{
                 do {
                     //AVAudioSessionCategoryPlayback 、AVAudioSessionCategoryPlayAndRecord
@@ -239,20 +260,20 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
                     audioRecorder.delegate = self
                     //准备录音
                     audioRecorder.prepareToRecord()
+                    
+                    //是否正在录音，如果没有，开始录音
+                    if !audioRecorder.isRecording {
+                        do {
+                            try audioSession.setActive(true)
+                            audioRecorder.record()
+                        }catch let error as NSError{
+                            print(error)
+                        }
+                    }
+                    
                 } catch let error as NSError{
                     print(error)
                 }
-            }
-        }
-        
-        //是否正在录音，如果没有，开始录音
-        if !audioRecorder.isRecording {
-            do {
-                
-                try audioSession.setActive(true)
-                audioRecorder.record()
-            }catch let error as NSError{
-                print(error)
             }
         }
     }
@@ -261,6 +282,9 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     func stopRecord(sender: AnyObject) {
         statueLab.text = "录音完成"
         isFinishRecord = true
+        
+        //遍历目录，获取录音文件
+        self.getFilelist(type: "m4a", path: self.savePathStr)
         
         if audioRecorder.isRecording{
             audioRecorder.stop()
@@ -288,14 +312,6 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
                 print(error)
             }
         }
-        
-        //获取录音文件列表
-        let fileManager = FileManager()
-        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentDirectory = urls[0] as NSURL
-        let urlStr : String = documentDirectory.absoluteString!
-        self.getFilelist(type: ".m4a", path: urlStr)
-
     }
     
     //暂停播放
@@ -324,16 +340,19 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
         }
     }
     
-    
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+
         if flag{
             if #available(iOS 8.0, *) {
+                
+                self.statueLab.text = "录音完成"
+
                 let alert = UIAlertController(title: "录音",
                                               message: "录音完成",
                                               preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK!", style: .default, handler: {action in
                     print("OK was tapped")
-                    self.statueLab.text = "录音完成"
+                    
                 }))
                 self.present(alert, animated:true, completion:nil)
             } else {
@@ -351,11 +370,19 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     
     //MARK:-uitableview
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        if dataAr != nil {
+            return dataAr.count
+        }else{
+            return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
+        
+        cell.textLabel?.text = dataAr[indexPath.row] as? String
+        
+        
         return cell
     }
     
@@ -374,15 +401,15 @@ extension ViewController:AVAudioRecorderDelegate{
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if flag{
             if #available(iOS 8.0, *) {
-                let alert = UIAlertController(title: "Recorder",
-                                              message: "Finished Recording",
-                                              preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK!", style: .default, handler: {action in
-                    print("OK was tapped")
-                }))
-                self.present(alert, animated:true, completion:nil)
+//                let alert = UIAlertController(title: "Recorder",
+//                                              message: "Finished Recording",
+//                                              preferredStyle: .alert)
+//                alert.addAction(UIAlertAction(title: "OK!", style: .default, handler: {action in
+//                    print("OK was tapped")
+//                }))
+//                self.present(alert, animated:true, completion:nil)
             } else {
-                // Fallback on earlier versions
+                 //Fallback on earlier versions
             }
         }
     }

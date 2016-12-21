@@ -16,6 +16,9 @@ class VideoRecording: UIViewController {
     override func viewDidLoad() {
         self.title = "视频录制"
         self.view.backgroundColor = UIColor.white
+        
+        
+        
     }
 
 }
