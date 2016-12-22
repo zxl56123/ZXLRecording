@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		927C57941E0B74DC003D26D1 /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 927C57821E0B74DC003D26D1 /* AFHTTPSessionManager.m */; };
+		927C57951E0B74DC003D26D1 /* AFNetworkReachabilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 927C57851E0B74DC003D26D1 /* AFNetworkReachabilityManager.m */; };
+		927C57961E0B74DC003D26D1 /* AFSecurityPolicy.m in Sources */ = {isa = PBXBuildFile; fileRef = 927C57871E0B74DC003D26D1 /* AFSecurityPolicy.m */; };
+		927C57971E0B74DC003D26D1 /* AFURLRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 927C57891E0B74DC003D26D1 /* AFURLRequestSerialization.m */; };
+		927C57981E0B74DC003D26D1 /* AFURLResponseSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 927C578B1E0B74DC003D26D1 /* AFURLResponseSerialization.m */; };
+		927C57991E0B74DC003D26D1 /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 927C578D1E0B74DC003D26D1 /* AFURLSessionManager.m */; };
+		927C579A1E0B74DC003D26D1 /* MBProgressHUD+NJ.m in Sources */ = {isa = PBXBuildFile; fileRef = 927C57901E0B74DC003D26D1 /* MBProgressHUD+NJ.m */; };
+		927C579B1E0B74DC003D26D1 /* MBProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 927C57911E0B74DC003D26D1 /* MBProgressHUD.bundle */; };
+		927C579C1E0B74DC003D26D1 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 927C57931E0B74DC003D26D1 /* MBProgressHUD.m */; };
 		92A13D911E07CC48008E0648 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A13D901E07CC48008E0648 /* AppDelegate.swift */; };
 		92A13D931E07CC48008E0648 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A13D921E07CC48008E0648 /* ViewController.swift */; };
 		92A13D961E07CC48008E0648 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92A13D941E07CC48008E0648 /* Main.storyboard */; };
@@ -17,6 +26,25 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		927C57811E0B74DC003D26D1 /* AFHTTPSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPSessionManager.h; sourceTree = "<group>"; };
+		927C57821E0B74DC003D26D1 /* AFHTTPSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPSessionManager.m; sourceTree = "<group>"; };
+		927C57831E0B74DC003D26D1 /* AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworking.h; sourceTree = "<group>"; };
+		927C57841E0B74DC003D26D1 /* AFNetworkReachabilityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworkReachabilityManager.h; sourceTree = "<group>"; };
+		927C57851E0B74DC003D26D1 /* AFNetworkReachabilityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFNetworkReachabilityManager.m; sourceTree = "<group>"; };
+		927C57861E0B74DC003D26D1 /* AFSecurityPolicy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFSecurityPolicy.h; sourceTree = "<group>"; };
+		927C57871E0B74DC003D26D1 /* AFSecurityPolicy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFSecurityPolicy.m; sourceTree = "<group>"; };
+		927C57881E0B74DC003D26D1 /* AFURLRequestSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLRequestSerialization.h; sourceTree = "<group>"; };
+		927C57891E0B74DC003D26D1 /* AFURLRequestSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLRequestSerialization.m; sourceTree = "<group>"; };
+		927C578A1E0B74DC003D26D1 /* AFURLResponseSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLResponseSerialization.h; sourceTree = "<group>"; };
+		927C578B1E0B74DC003D26D1 /* AFURLResponseSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLResponseSerialization.m; sourceTree = "<group>"; };
+		927C578C1E0B74DC003D26D1 /* AFURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLSessionManager.h; sourceTree = "<group>"; };
+		927C578D1E0B74DC003D26D1 /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLSessionManager.m; sourceTree = "<group>"; };
+		927C578F1E0B74DC003D26D1 /* MBProgressHUD+NJ.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MBProgressHUD+NJ.h"; sourceTree = "<group>"; };
+		927C57901E0B74DC003D26D1 /* MBProgressHUD+NJ.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MBProgressHUD+NJ.m"; sourceTree = "<group>"; };
+		927C57911E0B74DC003D26D1 /* MBProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MBProgressHUD.bundle; sourceTree = "<group>"; };
+		927C57921E0B74DC003D26D1 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		927C57931E0B74DC003D26D1 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		927C579D1E0B7570003D26D1 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Bridging-Header.h"; path = "ZXLRecording/Bridging-Header.h"; sourceTree = "<group>"; };
 		92A13D8D1E07CC48008E0648 /* ZXLRecording.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZXLRecording.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92A13D901E07CC48008E0648 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		92A13D921E07CC48008E0648 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -39,9 +67,53 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		927C577F1E0B74DC003D26D1 /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				927C57801E0B74DC003D26D1 /* AFNetworking */,
+				927C578E1E0B74DC003D26D1 /* MBProgressHUD */,
+			);
+			name = Lib;
+			path = ZXLRecording/Lib;
+			sourceTree = "<group>";
+		};
+		927C57801E0B74DC003D26D1 /* AFNetworking */ = {
+			isa = PBXGroup;
+			children = (
+				927C57811E0B74DC003D26D1 /* AFHTTPSessionManager.h */,
+				927C57821E0B74DC003D26D1 /* AFHTTPSessionManager.m */,
+				927C57831E0B74DC003D26D1 /* AFNetworking.h */,
+				927C57841E0B74DC003D26D1 /* AFNetworkReachabilityManager.h */,
+				927C57851E0B74DC003D26D1 /* AFNetworkReachabilityManager.m */,
+				927C57861E0B74DC003D26D1 /* AFSecurityPolicy.h */,
+				927C57871E0B74DC003D26D1 /* AFSecurityPolicy.m */,
+				927C57881E0B74DC003D26D1 /* AFURLRequestSerialization.h */,
+				927C57891E0B74DC003D26D1 /* AFURLRequestSerialization.m */,
+				927C578A1E0B74DC003D26D1 /* AFURLResponseSerialization.h */,
+				927C578B1E0B74DC003D26D1 /* AFURLResponseSerialization.m */,
+				927C578C1E0B74DC003D26D1 /* AFURLSessionManager.h */,
+				927C578D1E0B74DC003D26D1 /* AFURLSessionManager.m */,
+			);
+			path = AFNetworking;
+			sourceTree = "<group>";
+		};
+		927C578E1E0B74DC003D26D1 /* MBProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				927C578F1E0B74DC003D26D1 /* MBProgressHUD+NJ.h */,
+				927C57901E0B74DC003D26D1 /* MBProgressHUD+NJ.m */,
+				927C57911E0B74DC003D26D1 /* MBProgressHUD.bundle */,
+				927C57921E0B74DC003D26D1 /* MBProgressHUD.h */,
+				927C57931E0B74DC003D26D1 /* MBProgressHUD.m */,
+			);
+			path = MBProgressHUD;
+			sourceTree = "<group>";
+		};
 		92A13D841E07CC48008E0648 = {
 			isa = PBXGroup;
 			children = (
+				927C579D1E0B7570003D26D1 /* Bridging-Header.h */,
+				927C577F1E0B74DC003D26D1 /* Lib */,
 				92A13D8F1E07CC48008E0648 /* ZXLRecording */,
 				92A13D8E1E07CC48008E0648 /* Products */,
 			);
@@ -131,6 +203,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92A13D9B1E07CC48008E0648 /* LaunchScreen.storyboard in Resources */,
+				927C579B1E0B74DC003D26D1 /* MBProgressHUD.bundle in Resources */,
 				92A13D981E07CC48008E0648 /* Assets.xcassets in Resources */,
 				92A13D961E07CC48008E0648 /* Main.storyboard in Resources */,
 			);
@@ -143,10 +216,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				927C57961E0B74DC003D26D1 /* AFSecurityPolicy.m in Sources */,
+				927C57981E0B74DC003D26D1 /* AFURLResponseSerialization.m in Sources */,
 				92A13DA31E07CD29008E0648 /* SoundRecording.swift in Sources */,
 				92A13D931E07CC48008E0648 /* ViewController.swift in Sources */,
+				927C57941E0B74DC003D26D1 /* AFHTTPSessionManager.m in Sources */,
+				927C57991E0B74DC003D26D1 /* AFURLSessionManager.m in Sources */,
 				92A13D911E07CC48008E0648 /* AppDelegate.swift in Sources */,
+				927C579C1E0B74DC003D26D1 /* MBProgressHUD.m in Sources */,
+				927C57951E0B74DC003D26D1 /* AFNetworkReachabilityManager.m in Sources */,
+				927C579A1E0B74DC003D26D1 /* MBProgressHUD+NJ.m in Sources */,
 				92A13DA51E07CD45008E0648 /* VideoRecording.swift in Sources */,
+				927C57971E0B74DC003D26D1 /* AFURLRequestSerialization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,6 +354,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.zzlearn.ZXLRecording;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/zhengxiaolong/GitLearn/ZXLRecording/ZXLRecording/ZXLRecording/Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -287,6 +369,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.zzlearn.ZXLRecording;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/zhengxiaolong/GitLearn/ZXLRecording/ZXLRecording/ZXLRecording/Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
@@ -310,6 +393,7 @@
 				92A13DA11E07CC48008E0648 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

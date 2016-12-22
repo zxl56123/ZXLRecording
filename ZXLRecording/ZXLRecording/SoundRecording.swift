@@ -26,7 +26,10 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     var playBtn : UIButton!
     var statueLab : UILabel!
     var tableview : UITableView!
-    var dataAr : [Any]!
+    var dataAr : [String]!
+    
+    var manager: AFHTTPSessionManager! //上传
+    
     //获取音频会话单例
     let audioSession = AVAudioSession.sharedInstance()
     var isAllowed:Bool = false
@@ -48,7 +51,7 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
         self.title = "录制音频"
         self.view.backgroundColor = UIColor.white
         
-         dataAr = Array<Any>()
+         dataAr = Array<String>()
         
         //首先要判断是否允许访问麦克风&初始化
         self.recordPermissionAndInit()
@@ -298,7 +301,6 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     
     //开始播放
     func startPlaying(sender: AnyObject) {
-        statueLab.text = "播放中..."
         if (!audioRecorder.isRecording){
             do {
                 //创建音频播放器AVAudioPlayer，用于在录音完成之后播放录音
@@ -307,6 +309,8 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
                     try audioPlayer = AVAudioPlayer(contentsOf: url as URL)
                     audioPlayer.delegate = self
                     audioPlayer.play()
+
+                    statueLab.text = "播放中..."
                 }
             } catch let error as NSError{
                 print(error)
@@ -344,9 +348,9 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
 
         if flag{
             if #available(iOS 8.0, *) {
-                
+                /*
                 self.statueLab.text = "录音完成"
-
+                
                 let alert = UIAlertController(title: "录音",
                                               message: "录音完成",
                                               preferredStyle: .alert)
@@ -355,6 +359,7 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
                     
                 }))
                 self.present(alert, animated:true, completion:nil)
+                */
             } else {
                 // Fallback on earlier versions
             }
@@ -380,7 +385,7 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
         
-        cell.textLabel?.text = dataAr[indexPath.row] as? String
+        cell.textLabel?.text = dataAr[indexPath.row]
         
         
         return cell
@@ -388,10 +393,120 @@ class SoundRecording: UIViewController,AVAudioRecorderDelegate,AVAudioPlayerDele
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableview.deselectRow(at: indexPath, animated: true)
-    
-        NSLog("%ld", indexPath.row)
-    
+        
+        let urlStr = savePathStr + "/" + dataAr[indexPath.row]
+        print(urlStr)
+
+        if audioRecorder != nil {
+            //是否正在录音
+            if (!audioRecorder.isRecording){
+                do {
+                    //创建音频播放器AVAudioPlayer，用于在录音完成之后播放录音
+                    let url:NSURL? = NSURL.fileURL(withPath: urlStr) as NSURL?
+                    if let url = url{
+                        try audioPlayer = AVAudioPlayer(contentsOf: url as URL)
+                        audioPlayer.delegate = self
+                        audioPlayer.play()
+                        
+                        statueLab.text = "播放中..."
+                    }
+                } catch let error as NSError{
+                    print(error)
+                }
+            }
+        }else{
+            //直接播放
+            do {
+                //创建音频播放器AVAudioPlayer，用于在录音完成之后播放录音
+                let url:NSURL? = NSURL.fileURL(withPath: urlStr) as NSURL?
+                if let url = url{
+                    try audioPlayer = AVAudioPlayer(contentsOf: url as URL)
+                    audioPlayer.delegate = self
+                    audioPlayer.play()
+                    
+                    statueLab.text = "播放中..."
+                }
+            } catch let error as NSError{
+                print(error)
+            }
+        }
+        
     }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let upload = UITableViewRowAction(style: .normal, title: "上传") {
+            action, index in
+            let urlStr = self.savePathStr + "/" + self.dataAr[indexPath.row]
+            print("上传 \(urlStr)")
+            
+            self.uploadData(path: urlStr, filename: self.dataAr[indexPath.row])
+        }
+        upload.backgroundColor = UIColor.green
+        return [upload]
+    }
+    
+    
+    func uploadData(path:String, filename:String) -> Void {
+        
+        let baseURL = URL(string:
+            "http://172.31.60.54:8989/yxb/public/uploadImg_v1_3_3")
+        // 创建AFHTTPSessionManager实例
+        manager = AFHTTPSessionManager(baseURL:baseURL)
+        // 为服务端的HTML响应设置解析器
+        manager.responseSerializer = AFHTTPResponseSerializer()
+        
+        let parameters: NSDictionary = ["enterpriseId": "43",
+                                        "inteVersion": "1.0.1",
+                                        "module": "annc"
+                                        ]
+        let url:NSURL? = NSURL.fileURL(withPath: path) as NSURL?
+
+        // 使用AFHTTPSessionManager发送POST请求
+        manager.post("", parameters:parameters,
+                     // 使用代码块来封装要上传的文件数据
+        
+            constructingBodyWith:{formData in
+                //获取音频文件
+                //let soundData = UIImageJPEGRepresentation(image, 1)
+                // 将照片数据添加到上传请求中
+                let soundData = try! Data(contentsOf: URL(fileURLWithPath: path))
+
+                formData.appendPart(withFileData: soundData, name:filename,
+                                    fileName:filename,
+                                    // 指定上传文件的MIME类型
+                    mimeType:"application/octet-stream") //"audio/mp3"
+                
+//                let url:NSURL? = NSURL.fileURL(withPath: path) as NSURL?
+//
+//        
+//                do {
+//                    try formData.appendPart(withFileURL: url as! URL, name: filename, fileName: filename, mimeType: "audio/mp3")
+//                }catch let error as NSError {
+//                    print(error)
+//                }
+
+        },
+            progress:nil,
+            // 获取服务器响应成功时激发的代码块
+            success:{task, responseObject in
+                // 当使用HTTP响应解析器时，服务器响应数据被封装在NSData中
+                // 此处将NSData转换成NSString，并使用UIAlertController显示上传结果
+                let msg = NSString(data:responseObject as! Data,encoding: String.Encoding.utf8.rawValue)
+                let alert = UIAlertController(title:"上传结果",
+                                              message:msg! as String, preferredStyle:.alert)
+                alert.addAction(UIAlertAction(title:"确定",
+                                              style:.cancel, handler:{action in
+                                                self.dismiss(animated: true, completion:nil)
+                }))
+                self.present(alert, animated:true, completion:nil)
+        },
+            // 获取服务器响应失败时激发的代码块
+            failure:{task, error in
+                print("获取服务器响应出错！\(error)")
+        })
+        
+    }
+    
 }
 
 
